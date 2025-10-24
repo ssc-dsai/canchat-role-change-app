@@ -2,7 +2,6 @@ from databases import Database
 from sqlalchemy import create_engine, MetaData
 
 from app.config import DATABASE_URL
-import os
 
 # Database connection
 database = Database(DATABASE_URL)
