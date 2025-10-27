@@ -1,5 +1,5 @@
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
@@ -51,3 +51,20 @@ async def root():
         "name": APP_NAME,
         "version": APP_VERSION
     }
+
+@app.get("/health")
+async def healthcheck():
+    return {"status": True}
+
+@app.get("/health/db")
+async def healthcheck_with_db():
+    try:
+        query = user.select().limit(1)
+        await database.fetch_one(query)        
+        return {"status": True}
+    except Exception as e:
+        log.error(f"Database health check failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection failed",
+        )

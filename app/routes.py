@@ -61,21 +61,3 @@ async def change_role(
     except Exception as e:
         log.error(f"Error updating user role: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
-    
-
-@router.get("/health")
-async def healthcheck():
-    return {"status": True}
-
-@router.get("/health/db")
-async def healthcheck_with_db():
-    try:
-        query = user.select().limit(1)
-        await database.fetch_one(query)        
-        return {"status": True}
-    except Exception as e:
-        log.error(f"Database health check failed: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Database connection failed",
-        )
