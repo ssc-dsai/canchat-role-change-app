@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{include "canchat-role-change.fullname" .}}-postgresql-ca-secret
+  labels: {{- include "canchat-role-change.labels" . | nindent 4}}
+type: Opaque
+data:
+  ca.crt: {{.Values.postgresql.certs.caCrt | b64enc | quote}}

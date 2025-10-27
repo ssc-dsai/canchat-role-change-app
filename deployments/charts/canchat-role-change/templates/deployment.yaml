@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "canchat-role-change.fullname" . }}
+  labels:
+    {{- include "canchat-role-change.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "canchat-role-change.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "canchat-role-change.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          {{- end }}
+          env:
+            - name: PORT
+              value: "8000"
+            - name: APP_VERSION
+              value: {{ .Chart.AppVersion | quote }}
+            - name: APP_NAME
+              value: "CANChat Role Management App"
+            - name: APP_ENV
+              value: {{ .Values.appEnv | quote }}
+            - name: API_PREFIX
+              value: "/api/v1"
+            - name: ALLOWED_EMAILS
+              value: {{ .Values.allowedEmails | quote }}
+            - name: ALLOWED_ORIGINS
+              value: {{ .Values.allowedOrigins | quote }} 
+            - name: ALLOWED_ROLES
+              value: {{ .Values.allowedRoles | quote }}
+            - name: POSTGRES_USER
+              value: {{ .Values.postgresql.user | quote }}
+            - name: POSTGRES_NAME
+              value: {{ .Values.postgresql.name | quote }}
+            - name: POSTGRES_HOST
+              value: {{ .Values.postgresql.host | quote }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.postgresql.port | quote }}
+            - name: POSTGRES_SSLMODE
+              value: {{ .Values.postgresql.sslmode | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if kindIs "string" .Values.postgresql.password }}
+                  name: {{include "canchat-role-change.fullname" .}}-postgresql-secret
+                  key: POSTGRES_PASSWORD
+                  {{- else if and (kindIs "map" .Values.postgresql.password) (.Values.postgresql.password.valueFrom.secretKeyRef.name) (.Values.postgresql.password.valueFrom.secretKeyRef.key) }}
+                  name: {{ .Values.postgresql.password.valueFrom.secretKeyRef.name }}
+                  key: {{ .Values.postgresql.password.valueFrom.secretKeyRef.key }}
+                  {{- else }}
+                  {{ fail "Error occurred while templating .postgresql.password. Please ensure it is either a string or a map referencing valueFrom.secretKeyRef" }}
+                  {{- end }}
+            {{- if or (eq .Values.postgresql.sslmode "verify-ca") (eq .Values.postgresql.sslmode "verify-full") }}
+            - name: POSTGRES_SSLROOTCERT
+              value: "/etc/ssl/certs/postgresql/ca.crt"
+            {{- end }}
+          volumeMounts:
+            {{- if or (eq .Values.postgresql.sslmode "verify-ca") (eq .Values.postgresql.sslmode "verify-full") }}
+            - name: postgres-certs
+              mountPath: "/etc/ssl/certs/postgresql"
+              readOnly: true
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        {{- if or (eq .Values.postgresql.sslmode "verify-ca") (eq .Values.postgresql.sslmode "verify-full") }}
+        - name: postgres-certs
+          secret:
+            secretName: {{ include "canchat-role-change.fullname" . }}-postgresql-ca-secret
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
