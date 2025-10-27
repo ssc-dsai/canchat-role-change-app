@@ -58,11 +58,11 @@ spec:
             - name: API_PREFIX
               value: "/api/v1"
             - name: ALLOWED_EMAILS
-              value: {{ .Values.allowedEmails | quote }}
+              value: "{{ .Values.allowedEmails | join "," }}"
             - name: ALLOWED_ORIGINS
-              value: {{ .Values.allowedOrigins | quote }} 
+              value: "{{ .Values.allowedOrigins | join "," }}"
             - name: ALLOWED_ROLES
-              value: {{ .Values.allowedRoles | quote }}
+              value: "{{ .Values.allowedRoles | join "," }}"            
             - name: POSTGRES_USER
               value: {{ .Values.postgresql.user | quote }}
             - name: POSTGRES_NAME

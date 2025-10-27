@@ -13,9 +13,17 @@ imagePullSecrets: []
 
 appEnv: "prod" # e.g. dev, uat, prod
 
-allowedEmails: ""
-allowedOrigins: "*"
-allowedRoles: "user,pending,analyst,global_analyst"
+allowedEmails: []
+allowedOrigins: []
+  # e.g. 
+  # - "*"
+  # - "https://mydomain.com"
+  # - "https://myotherdomain.com"
+allowedRoles: 
+  - "user"
+  - "pending"
+  - "analyst"
+  - "global_analyst"
 
 
 postgresql:
