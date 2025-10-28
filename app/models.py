@@ -2,16 +2,9 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import Table, Column, String, DateTime, func
 from app.database import metadata
 
-# Role modification request
-class RoleChangeRequest(BaseModel):
-    email: EmailStr
-    role: str
-
-# Role retrieval request
-class RoleRequest(BaseModel):
-    email: EmailStr
-
 # Response messages
+class RoleChangeRequest(BaseModel):
+    role: str
 class RoleResponse(BaseModel):
     email: EmailStr
     role: str

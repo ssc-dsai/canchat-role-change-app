@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> <!-- Tailwind CSS CDN -->
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        <h1 class="text-2xl font-bold text-center mb-4">{{ app_name }}</h1>
+        <div id="roleDisplay" class="mb-4 text-gray-700"></div>
+        <select id="roleInput" class="border border-gray-300 p-2 rounded w-full mb-2">
+            <option value="" disabled selected>Select a role</option>
+            {% for role in allowed_roles %}
+                <option value="{{ role }}">{{ role }}</option>
+            {% endfor %}
+        </select>
+        
+        <button onclick="updateRole()" class="bg-blue-500 text-white p-2 rounded w-full">Update Role</button>
+        
+        <div id="errorDisplay" class="mt-4 p-2 text-red-700 bg-red-200 rounded hidden"></div>
+        
+        <div class="flex justify-center m-4">
+            <a href="/fr" class="text-blue-500 underline">Français</a>
+        </div>
+    </div>
+
+    <script>
+        const email = "{{ email }}";
+
+        async function fetchRole() {
+            try {
+                // Fetch the current role from the server
+                const response = await fetch('/api/v1/role', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Forwarded-Email': email
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch role');
+                }
+
+                const data = await response.json();
+                document.getElementById('roleDisplay').innerText = 'Current Role: ' + (data.role || 'Undefined');
+
+                const select = document.getElementById('roleInput');
+                select.value = data.role || '';
+                
+                clearError();
+            } catch (error) {
+                showError('Error: ' + error.message);
+                console.error('Error fetching role:', error);
+            }
+        }
+
+        async function updateRole() {
+            const newRole = document.getElementById('roleInput').value;
+            try {
+                const response = await fetch('/api/v1/role', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Forwarded-Email': email
+                    },
+                    body: JSON.stringify({ role: newRole }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update role');
+                }
+
+                fetchRole(); // Reload the role after updating
+                clearError();
+            } catch (error) {
+                showError('Error: ' + error.message);
+                console.error('Error updating role:', error);
+            }
+        }
+
+        function showError(message) {
+            const errorDisplay = document.getElementById('errorDisplay');
+            errorDisplay.innerText = message;
+            errorDisplay.classList.remove('hidden');
+        }
+
+        function clearError() {
+            const errorDisplay = document.getElementById('errorDisplay');
+            errorDisplay.innerText = '';
+            errorDisplay.classList.add('hidden');
+        }
+
+        fetchRole(); // Fetch the role on page load
+    </script>
+</body>
+</html>
