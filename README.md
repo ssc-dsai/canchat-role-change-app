@@ -38,27 +38,3 @@ To get started with running the app, follow these steps:
    ```
 
 Make sure you have Python, pip, and Conda installed on your machine.
-
-## Usage Examples
-
-### Get User Role
-To retrieve a user's current role:
-
-```bash
-curl -X GET http://127.0.0.1:8000/api/v1/role \
-     -H "X-Forwarded-Email: admin@example.com" \
-     -H "Content-Type: application/json" \
-     -d '{"email": "john.doe@example.com"}'
-```
-
-### Change User Role
-To change a user's role:
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/role \
-     -H "X-Forwarded-Email: admin@example.com" \
-     -H "Content-Type: application/json" \
-     -d '{"email": "john.doe@example.com", "role": "pending"}'
-```
-
-Note: The `X-Forwarded-Email` header must contain an admin user's email address to authorize the request.
