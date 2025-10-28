@@ -26,17 +26,10 @@ allowedRoles:
   - "global_analyst"
 
 
-postgresql:
-  user: "postgres"
-  name: "postgres"
-  host: "my-postgres.example.com"
-  port: 5432
-  password: "postgres"
-  #  valueFrom:
-  #    secretKeyRef:
-  #      name:
-  #      key:
-  sslmode: "verify-full"
+database:
+  url: ""
+  enableSsl: false
+  certPath: ""
   certs:
     caCrt: |
       -----BEGIN CERTIFICATE-----

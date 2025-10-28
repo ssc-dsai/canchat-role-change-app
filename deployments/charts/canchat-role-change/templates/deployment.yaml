@@ -58,50 +58,29 @@ spec:
             - name: API_PREFIX
               value: "/api/v1"
             - name: ALLOWED_EMAILS
-              value: "{{ .Values.allowedEmails | join "," }}"
+              value: {{ .Values.allowedEmails | join "," | quote }}
             - name: ALLOWED_ORIGINS
-              value: "{{ .Values.allowedOrigins | join "," }}"
+              value: {{ .Values.allowedOrigins | join "," | quote }}
             - name: ALLOWED_ROLES
-              value: "{{ .Values.allowedRoles | join "," }}"            
-            - name: POSTGRES_USER
-              value: {{ .Values.postgresql.user | quote }}
-            - name: POSTGRES_NAME
-              value: {{ .Values.postgresql.name | quote }}
-            - name: POSTGRES_HOST
-              value: {{ .Values.postgresql.host | quote }}
-            - name: POSTGRES_PORT
-              value: {{ .Values.postgresql.port | quote }}
-            - name: POSTGRES_SSLMODE
-              value: {{ .Values.postgresql.sslmode | quote }}
-            - name: POSTGRES_PASSWORD
+              value: {{ .Values.allowedRoles | join "," | quote }}
+            - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  {{- if kindIs "string" .Values.postgresql.password }}
-                  name: {{include "canchat-role-change.fullname" .}}-postgresql-secret
-                  key: POSTGRES_PASSWORD
-                  {{- else if and (kindIs "map" .Values.postgresql.password) (.Values.postgresql.password.valueFrom.secretKeyRef.name) (.Values.postgresql.password.valueFrom.secretKeyRef.key) }}
-                  name: {{ .Values.postgresql.password.valueFrom.secretKeyRef.name }}
-                  key: {{ .Values.postgresql.password.valueFrom.secretKeyRef.key }}
-                  {{- else }}
-                  {{ fail "Error occurred while templating .postgresql.password. Please ensure it is either a string or a map referencing valueFrom.secretKeyRef" }}
-                  {{- end }}
-            {{- if or (eq .Values.postgresql.sslmode "verify-ca") (eq .Values.postgresql.sslmode "verify-full") }}
-            - name: POSTGRES_SSLROOTCERT
-              value: "/etc/ssl/certs/postgresql/ca.crt"
-            {{- end }}
+                  name: {{ include "canchat-role-change.fullname" . }}-database-url-secret
+                  key: DATABASE_URL
           volumeMounts:
-            {{- if or (eq .Values.postgresql.sslmode "verify-ca") (eq .Values.postgresql.sslmode "verify-full") }}
-            - name: postgres-certs
-              mountPath: "/etc/ssl/certs/postgresql"
+            {{- if .Values.database.enableSsl }}
+            - name: database-certs
+              mountPath: {{ .Values.database.certPath | quote }}
               readOnly: true
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-        {{- if or (eq .Values.postgresql.sslmode "verify-ca") (eq .Values.postgresql.sslmode "verify-full") }}
-        - name: postgres-certs
+        {{- if .Values.database.enableSsl }}
+        - name: database-certs
           secret:
-            secretName: {{ include "canchat-role-change.fullname" . }}-postgresql-ca-secret
+            secretName: {{ include "canchat-role-change.fullname" . }}-database-ca-secret
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
