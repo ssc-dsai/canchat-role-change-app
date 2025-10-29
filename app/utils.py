@@ -1,4 +1,4 @@
-from app.config import ALLOWED_EMAILS, ALLOWED_ROLES
+from app.config import ALLOWED_ROLES
 
 # Validate new role (based on your business rules)
 def is_valid_role(role: str) -> bool:
