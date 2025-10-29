@@ -49,19 +49,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "canchat-role-change.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Define Allowed Postgresql SSL Mode
-*/}}
-{{- define "allowedSSLModes" -}}
-  disable, require, verify-ca, verify-full
-{{- end -}}
-
-{{- define "validate.sslmode" -}}
-{{- $sslmode := .Values.postgresql.sslmode -}}
-{{- $allowed := splitList ", " (include "allowedSSLModes" .) -}}
-
-{{- if not (has $sslmode $allowed) -}}
-{{- fail (printf "Invalid sslmode '%s'. Allowed values are: %v" $sslmode $allowed) -}}
-{{- end -}}
-{{- end -}}

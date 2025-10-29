@@ -53,12 +53,12 @@ spec:
               value: {{ .Chart.AppVersion | quote }}
             - name: APP_NAME
               value: "CANChat Role Management App"
+            - name: APP_NAME_FR
+              value: "Application de gestion des rôles CANChat"
             - name: APP_ENV
               value: {{ .Values.appEnv | quote }}
             - name: API_PREFIX
               value: "/api/v1"
-            - name: ALLOWED_EMAILS
-              value: {{ .Values.allowedEmails | join "," | quote }}
             - name: ALLOWED_ORIGINS
               value: {{ .Values.allowedOrigins | join "," | quote }}
             - name: ALLOWED_ROLES
@@ -69,18 +69,23 @@ spec:
                   name: {{ include "canchat-role-change.fullname" . }}-database-url-secret
                   key: DATABASE_URL
           volumeMounts:
-            {{- if .Values.database.enableSsl }}
-            - name: database-certs
-              mountPath: {{ .Values.database.certPath | quote }}
-              readOnly: true
+            {{- range .Values.externalVolumes }}
+            - name: {{ .name }}
+              {{- if eq .type "secret" }}
+              secret:
+                secretName: {{ .secretName }}
+              {{- else if eq .type "configMap" }}
+              configMap:
+                name: {{ .configMapName }}
+              {{- end }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-        {{- if .Values.database.enableSsl }}
-        - name: database-certs
-          secret:
-            secretName: {{ include "canchat-role-change.fullname" . }}-database-ca-secret
+        {{- range .Values.externalVolumes }}
+        - name: {{ .name }}
+          mountPath: {{ .path }}
+          readOnly: {{ .readOnly | default false }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
