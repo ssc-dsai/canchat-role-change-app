@@ -28,11 +28,13 @@
 
     <script>
         const email = "{{ email }}";
+        const appPrefix = "{{ app_prefix }}";
+        const apiPrefix = "{{ api_prefix }}";
 
         async function fetchRole() {
             try {
                 // Fetch the current role from the server
-                const response = await fetch('/api/v1/role', {
+                const response = await fetch(appPrefix + apiPrefix + '/role', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -60,7 +62,7 @@
         async function updateRole() {
             const newRole = document.getElementById('roleInput').value;
             try {
-                const response = await fetch('/api/v1/role', {
+                const response = await fetch(appPrefix + apiPrefix + '/role', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

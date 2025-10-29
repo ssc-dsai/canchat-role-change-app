@@ -56,7 +56,7 @@ async def root(request: Request, x_forwarded_email: EmailStr = Header(None)):
     if not x_forwarded_email:
         return templates.TemplateResponse("403.html", {"request": request})  # Render the 403 template
     
-    return templates.TemplateResponse("index.html", {"request": request, "email": x_forwarded_email, "app_name": APP_NAME, "allowed_roles": ALLOWED_ROLES})  # Render the template
+    return templates.TemplateResponse("index.html", {"request": request, "email": x_forwarded_email, "app_name": APP_NAME, "allowed_roles": ALLOWED_ROLES, "app_prefix": APP_PREFIX, "api_prefix": API_PREFIX})  # Render the template
 
 @app.get("/fr", response_class=HTMLResponse)  # Specify the response class
 async def root(request: Request, x_forwarded_email: EmailStr = Header(None)):
@@ -64,7 +64,7 @@ async def root(request: Request, x_forwarded_email: EmailStr = Header(None)):
     if not x_forwarded_email:
         return templates.TemplateResponse("403.html", {"request": request})  # Render the 403 template
     
-    return templates.TemplateResponse("index_fr.html", {"request": request, "email": x_forwarded_email, "app_name": APP_NAME_FR, "allowed_roles": ALLOWED_ROLES})  # Render the template
+    return templates.TemplateResponse("index_fr.html", {"request": request, "email": x_forwarded_email, "app_name": APP_NAME_FR, "allowed_roles": ALLOWED_ROLES, "app_prefix": APP_PREFIX, "api_prefix": API_PREFIX})  # Render the template
 
 
 @app.get("/health")
