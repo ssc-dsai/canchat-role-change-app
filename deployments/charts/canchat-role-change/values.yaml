@@ -32,18 +32,19 @@ allowedRoles:
 
 database:
   url: ""
-  caCrt: |
-    -----BEGIN CERTIFICATE-----
-    ...
-    -----END CERTIFICATE-----
+  caCrt: ""
+    # -----BEGIN CERTIFICATE-----
+    # ...
+    # -----END CERTIFICATE-----
 
-extraEnv: {}
-  # CUSTOM_ENV_VAR_1:       # This key points to another map
-  #   secretName: my-custom-secret
-  #   key: secret-key-1
-  # CUSTOM_ENV_VAR_2:       # Key-value pair
-  #   secretName: another-secret
-  #   key: secret-key-2
+extraEnvVars: []
+#  - name: CUSTOM_ENV_VAR
+#    value: "custom_value"
+  # - name: CUSTOM_ENV_VAR_FROM_SECRET
+  #   valueFrom:
+  #     secretKeyRef:
+  #       key: CUSTOM_ENV_VAR_FROM_SECRET
+  #       name: CUSTOM_SECRET_NAME
 
 externalVolumes: []
   # - name: my-external-volume

@@ -70,6 +70,9 @@ spec:
                 secretKeyRef:
                   name: {{ include "canchat-role-change.fullname" . }}-database-url-secret
                   key: DATABASE_URL
+            {{- with .Values.extraEnvVars }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
           volumeMounts:
             {{- range .Values.externalVolumes }}
             - name: {{ .name }}
