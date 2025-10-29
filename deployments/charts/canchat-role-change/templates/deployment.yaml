@@ -57,8 +57,10 @@ spec:
               value: "Application de gestion des rôles CANChat"
             - name: APP_ENV
               value: {{ .Values.appEnv | quote }}
+            - name: APP_PREFIX
+              value: {{ .Values.prefix.app | quote }}
             - name: API_PREFIX
-              value: "/api/v1"
+              value: {{ .Values.prefix.api | quote }}
             - name: ALLOWED_ORIGINS
               value: {{ .Values.allowedOrigins | join "," | quote }}
             - name: ALLOWED_ROLES

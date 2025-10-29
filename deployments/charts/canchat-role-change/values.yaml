@@ -11,6 +11,10 @@ image:
 
 imagePullSecrets: []
 
+prefix:
+  app: "/test-role-change"
+  api: "/api/v1"
+
 appEnv: "prod" # e.g. dev, uat, prod
 
 allowedOrigins: []

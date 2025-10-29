@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from app.routes import router
 from app.database import database, engine
 from app.models import user
-from app.config import APP_ENV, APP_NAME, APP_NAME_FR, APP_VERSION, API_PREFIX, ALLOWED_ORIGINS, ALLOWED_ROLES
+from app.config import APP_ENV, APP_NAME, APP_NAME_FR, APP_VERSION, APP_PREFIX, API_PREFIX, ALLOWED_ORIGINS, ALLOWED_ROLES
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI):
 
 
 # Initialize FastAPI app
-app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan)
+app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan, root_path=APP_PREFIX)
 
 app.add_middleware(
     CORSMiddleware,
