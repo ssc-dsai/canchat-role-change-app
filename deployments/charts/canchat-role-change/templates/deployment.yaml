@@ -86,11 +86,21 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- if .Values.database.caCrt }}
+            - name: database-certs
+              mountPath: /etc/ssl/certs/database-ca.crt
+              readOnly: true
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.externalVolumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.database.caCrt }}
+        - name: database-certs
+          secret:
+            secretName: {{ include "canchat-role-change.fullname" . }}-database-ca-configmap
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
