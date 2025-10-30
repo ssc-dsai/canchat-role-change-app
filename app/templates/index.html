@@ -31,15 +31,17 @@
         const appPrefix = "{{ app_prefix }}";
         const apiPrefix = "{{ api_prefix }}";
 
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-Forwarded-Email': email
+        };
+
         async function fetchRole() {
             try {
                 // Fetch the current role from the server
                 const response = await fetch(appPrefix + apiPrefix + '/role', {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Forwarded-Email': email
-                    },
+                    headers: headers
                 });
 
                 if (!response.ok) {
@@ -64,10 +66,7 @@
             try {
                 const response = await fetch(appPrefix + apiPrefix + '/role', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Forwarded-Email': email
-                    },
+                    headers: headers,
                     body: JSON.stringify({ role: newRole }),
                 });
 
