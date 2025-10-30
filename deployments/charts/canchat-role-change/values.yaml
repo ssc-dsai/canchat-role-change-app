@@ -71,6 +71,12 @@ livenessProbe:
   periodSeconds: 10
   timeoutSeconds: 1
 
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 1
+
 securityContext:
   {}
   # capabilities:
