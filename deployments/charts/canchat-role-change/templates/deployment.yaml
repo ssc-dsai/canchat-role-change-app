@@ -82,25 +82,16 @@ spec:
             {{- with .Values.extraEnvVars }}
               {{- toYaml . | nindent 12 }}
             {{- end }}
+          {{- with .Values.externalVolumesMounts }}
           volumeMounts:
-            {{- range .Values.externalVolumes }}
-            - name: {{ .name }}
-              {{- if eq .type "secret" }}
-              secret:
-                secretName: {{ .secretName }}
-              {{- else if eq .type "configMap" }}
-              configMap:
-                name: {{ .configMapName }}
-              {{- end }}
-            {{- end }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.externalVolumes }}
       volumes:
-        {{- range .Values.externalVolumes }}
-        - name: {{ .name }}
-          mountPath: {{ .path }}
-          readOnly: {{ .readOnly | default false }}
-        {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

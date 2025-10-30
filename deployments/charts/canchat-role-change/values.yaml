@@ -50,13 +50,14 @@ externalVolumes: []
   # - name: my-external-volume
   #   type: secret
   #   secretName: my-cert-secret
-  #   mountPath: /path/in/container
-  #   readOnly: true
   # - name: another-volume
   #   type: configMap
   #   configMapName: some-config
-  #   path: /etc/config
-  #   readOnly: false
+
+externalVolumesMounts: []
+  # - name: my-external-volume
+  #   mountPath: /path/in/container
+  #   readOnly: true
 
 podAnnotations: {}
 podLabels: {}
