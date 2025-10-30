@@ -48,11 +48,11 @@ extraEnvVars: []
 
 externalVolumes: []
   # - name: my-external-volume
-  #   type: secret
-  #   secretName: my-cert-secret
+  #   secret:
+  #      secretName: my-cert-secret
   # - name: another-volume
-  #   type: configMap
-  #   configMapName: some-config
+  #   configMap:
+  #      configMapName: some-config
 
 externalVolumesMounts: []
   # - name: my-external-volume
