@@ -99,8 +99,8 @@ spec:
       {{- end }}
       {{- if .Values.database.caCrt }}
         - name: database-certs
-          secret:
-            secretName: {{ include "canchat-role-change.fullname" . }}-database-ca-configmap
+          configMap:
+            configMapName: {{ include "canchat-role-change.fullname" . }}-database-ca-configmap
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
