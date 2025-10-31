@@ -27,13 +27,12 @@
     </div>
 
     <script>
-        const email = "{{ email }}";
         const appPrefix = "{{ app_prefix }}";
         const apiPrefix = "{{ api_prefix }}";
-
+        
         const headers = {
             'Content-Type': 'application/json',
-            'X-Forwarded-Email': email
+            '{{ email_header_name }}': "{{ email }}"
         };
 
         async function fetchRole() {

@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from app.routes import router
 from app.database import database, engine
 from app.models import user
-from app.config import APP_ENV, APP_NAME, APP_NAME_FR, APP_VERSION, APP_PREFIX, API_PREFIX, ALLOWED_ORIGINS, ALLOWED_ROLES
+from app.config import APP_ENV, APP_NAME, APP_NAME_FR, APP_VERSION, APP_PREFIX, API_PREFIX, ALLOWED_ORIGINS, ALLOWED_ROLES, EMAIL_HEADER_NAME
 
 log = logging.getLogger(__name__)
 
@@ -50,21 +50,21 @@ app.add_middleware(
 # Include routes
 app.include_router(router, prefix=API_PREFIX)
 
-@app.get("/", response_class=HTMLResponse)  # Specify the response class
-async def root(request: Request, x_forwarded_email: EmailStr = Header(None)):
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request, forwarded_email: EmailStr = Header(None, alias=EMAIL_HEADER_NAME)):
 
-    if not x_forwarded_email:
-        return templates.TemplateResponse("403.html", {"request": request})  # Render the 403 template
+    if not forwarded_email:
+        return templates.TemplateResponse("403.html", {"request": request})
     
-    return templates.TemplateResponse("index.html", {"request": request, "email": x_forwarded_email, "app_name": APP_NAME, "allowed_roles": ALLOWED_ROLES, "app_prefix": APP_PREFIX, "api_prefix": API_PREFIX})  # Render the template
+    return templates.TemplateResponse("index.html", {"request": request, "email_header_name": EMAIL_HEADER_NAME, "email": forwarded_email, "app_name": APP_NAME, "allowed_roles": ALLOWED_ROLES, "app_prefix": APP_PREFIX, "api_prefix": API_PREFIX})
 
-@app.get("/fr", response_class=HTMLResponse)  # Specify the response class
-async def root(request: Request, x_forwarded_email: EmailStr = Header(None)):
+@app.get("/fr", response_class=HTMLResponse)
+async def root(request: Request, forwarded_email: EmailStr = Header(None, alias=EMAIL_HEADER_NAME)):
 
-    if not x_forwarded_email:
-        return templates.TemplateResponse("403.html", {"request": request})  # Render the 403 template
+    if not forwarded_email:
+        return templates.TemplateResponse("403.html", {"request": request})
     
-    return templates.TemplateResponse("index_fr.html", {"request": request, "email": x_forwarded_email, "app_name": APP_NAME_FR, "allowed_roles": ALLOWED_ROLES, "app_prefix": APP_PREFIX, "api_prefix": API_PREFIX})  # Render the template
+    return templates.TemplateResponse("index_fr.html", {"request": request, "email_header_name": EMAIL_HEADER_NAME, "email": forwarded_email, "app_name": APP_NAME_FR, "allowed_roles": ALLOWED_ROLES, "app_prefix": APP_PREFIX, "api_prefix": API_PREFIX})
 
 
 @app.get("/health")

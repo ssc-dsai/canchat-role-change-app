@@ -1,6 +1,7 @@
 import logging
 from pydantic import EmailStr
 from fastapi import APIRouter, Header, HTTPException, status
+from app.config import EMAIL_HEADER_NAME
 from app.models import RoleResponse, RoleChangeRequest, user
 from app.utils import is_valid_role
 from app.database import database
@@ -10,14 +11,14 @@ log = logging.getLogger(__name__)
 router = APIRouter()
     
 @router.get("/role", response_model=RoleResponse)
-async def get_user_role(x_forwarded_email: EmailStr = Header(None)):
+async def get_user_role(forwarded_email: EmailStr = Header(None, alias=EMAIL_HEADER_NAME)):
 
     # Check if the requestor email exists and is allowed to make changes
-    if not x_forwarded_email:
+    if not forwarded_email:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized access")
 
     try:
-        query = user.select().where(user.c.email == x_forwarded_email )
+        query = user.select().where(user.c.email == forwarded_email )
         user_record = await database.fetch_one(query)
 
         if user_record:
@@ -32,10 +33,10 @@ async def get_user_role(x_forwarded_email: EmailStr = Header(None)):
 @router.post("/role", response_model=RoleResponse)
 async def change_role(
     request: RoleChangeRequest,
-    x_forwarded_email: str = Header(None),
+    forwarded_email: str = Header(None, alias=EMAIL_HEADER_NAME),
 ):
     # Check if the requestor email exists and is allowed to make changes
-    if not x_forwarded_email:
+    if not forwarded_email:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized access")
     
     # Validate the supplied role
@@ -44,11 +45,11 @@ async def change_role(
     
     try:
         # Update the user's role in the database
-        query = user.update().where(user.c.email == x_forwarded_email).values(role=request.role)
+        query = user.update().where(user.c.email == forwarded_email).values(role=request.role)
         await database.execute(query)
         
         # Query the user details after update
-        query = user.select().where(user.c.email == x_forwarded_email)
+        query = user.select().where(user.c.email == forwarded_email)
         user_record = await database.fetch_one(query)
         
         if not user_record:

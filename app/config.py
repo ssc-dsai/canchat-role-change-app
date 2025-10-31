@@ -40,6 +40,7 @@ APP_ENV = os.getenv("APP_ENV", "production")
 APP_PREFIX = validate_prefix(os.getenv("APP_PREFIX", ""))
 API_PREFIX = validate_prefix(os.getenv("API_PREFIX", "/api/v1"))
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", ['*'])
+EMAIL_HEADER_NAME = os.getenv("EMAIL_HEADER_NAME", "X-Forwarded-Email")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 ALLOWED_ROLES = os.getenv("ALLOWED_ROLES", "").split(",")
