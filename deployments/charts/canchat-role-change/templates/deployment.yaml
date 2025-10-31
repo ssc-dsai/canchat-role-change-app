@@ -70,6 +70,8 @@ spec:
               value: {{ .Values.prefix.app | quote }}
             - name: API_PREFIX
               value: {{ .Values.prefix.api | quote }}
+            - name: EMAIL_HEADER_NAME
+              value: {{ .Values.emailHeaderName | quote }}
             - name: ALLOWED_ORIGINS
               value: {{ .Values.allowedOrigins | join "," | quote }}
             - name: ALLOWED_ROLES
@@ -82,25 +84,29 @@ spec:
             {{- with .Values.extraEnvVars }}
               {{- toYaml . | nindent 12 }}
             {{- end }}
-          {{- with .Values.externalVolumesMounts }}
+          {{- if or .Values.externalVolumesMounts .Values.database.caCrt }}
           volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- if .Values.database.caCrt }}
+            {{- if .Values.externalVolumesMounts }}
+            {{- toYaml .Values.externalVolumesMounts | nindent 12 }}
+            {{- end }}
+            {{- if .Values.database.caCrt }}
             - name: database-certs
               mountPath: /etc/ssl/certs/database-ca.crt
               readOnly: true
+            {{- end }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.externalVolumes }}
+      {{- if or .Values.externalVolumes .Values.database.caCrt }}
       volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- if .Values.database.caCrt }}
+        {{- if .Values.externalVolumes }}
+        {{- toYaml .Values.externalVolumes | nindent 8 }}
+        {{- end }}
+        {{- if .Values.database.caCrt }}
         - name: database-certs
           configMap:
-            configMapName: {{ include "canchat-role-change.fullname" . }}-database-ca-configmap
+            name: {{ include "canchat-role-change.fullname" . }}-database-ca-configmap
+        {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

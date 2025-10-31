@@ -17,6 +17,8 @@ prefix:
 
 appEnv: "prod" # e.g. dev, uat, prod
 
+emailHeaderName: "X-Forwarded-Email"
+
 allowedOrigins: []
   # e.g. 
   # - "*"
@@ -54,7 +56,7 @@ externalVolumes: []
   #   configMap:
   #      configMapName: some-config
 
-externalVolumesMounts: []
+externalVolumeMounts: []
   # - name: my-external-volume
   #   mountPath: /path/in/container
   #   readOnly: true
