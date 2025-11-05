@@ -1,0 +1,10 @@
+{{- if .Values.database.caCrt }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "canchat-role-change.fullname" . }}-database-ca-configmap
+  labels: {{- include "canchat-role-change.labels" . | nindent 4 }}
+data:
+  ca.crt: |
+    {{ .Values.database.caCrt | nindent 4 }}
+{{- end }}

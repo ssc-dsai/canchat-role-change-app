@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "canchat-role-change.fullname" . }}
+  labels:
+    {{- include "canchat-role-change.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "canchat-role-change.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "canchat-role-change.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /health/db
+              port: 8000
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          {{- end }}
+          env:
+            - name: PORT
+              value: "8000"
+            - name: APP_VERSION
+              value: {{ .Chart.AppVersion | quote }}
+            - name: APP_NAME
+              value: "CANChat Role Management App"
+            - name: APP_NAME_FR
+              value: "Application de gestion des rôles CANChat"
+            - name: APP_ENV
+              value: {{ .Values.appEnv | quote }}
+            - name: APP_PREFIX
+              value: {{ .Values.prefix.app | quote }}
+            - name: API_PREFIX
+              value: {{ .Values.prefix.api | quote }}
+            - name: EMAIL_HEADER_NAME
+              value: {{ .Values.emailHeaderName | quote }}
+            - name: ALLOWED_ORIGINS
+              value: {{ .Values.allowedOrigins | join "," | quote }}
+            - name: ALLOWED_ROLES
+              value: {{ .Values.allowedRoles | join "," | quote }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "canchat-role-change.fullname" . }}-database-url-secret
+                  key: DATABASE_URL
+            {{- with .Values.extraEnvVars }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if or .Values.externalVolumesMounts .Values.database.caCrt }}
+          volumeMounts:
+            {{- with .Values.externalVolumesMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- if .Values.database.caCrt }}
+            - name: database-certs
+              mountPath: /etc/ssl/certs/database-ca.crt
+              readOnly: true
+            {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- if or .Values.externalVolumes .Values.database.caCrt }}
+      volumes:
+        {{- if .Values.externalVolumes }}
+        {{- toYaml .Values.externalVolumes | nindent 8 }}
+        {{- end }}
+        {{- if .Values.database.caCrt }}
+        - name: database-certs
+          configMap:
+            name: {{ include "canchat-role-change.fullname" . }}-database-ca-configmap
+        {{- end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
