@@ -86,8 +86,8 @@ spec:
             {{- end }}
           {{- if or .Values.externalVolumesMounts .Values.database.caCrt }}
           volumeMounts:
-            {{- if .Values.externalVolumesMounts }}
-            {{- toYaml .Values.externalVolumesMounts | nindent 12 }}
+            {{- with .Values.externalVolumesMounts }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
             {{- if .Values.database.caCrt }}
             - name: database-certs
