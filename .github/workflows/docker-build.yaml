@@ -69,7 +69,7 @@ jobs:
           context: .
           push: true
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.FULL_IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.FULL_IMAGE_NAME }},push-by-tag=true,name-canonical=true,push=true
           cache-from: type=registry,ref=${{ steps.cache-meta.outputs.tags }}
           cache-to: type=registry,ref=${{ steps.cache-meta.outputs.tags }},mode=max
           build-args: |
