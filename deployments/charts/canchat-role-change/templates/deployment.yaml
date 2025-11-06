@@ -84,9 +84,9 @@ spec:
             {{- with .Values.extraEnvVars }}
               {{- toYaml . | nindent 12 }}
             {{- end }}
-          {{- if or .Values.externalVolumesMounts .Values.database.caCrt }}
+          {{- if or .Values.externalVolumeMounts .Values.database.caCrt }}
           volumeMounts:
-            {{- with .Values.externalVolumesMounts }}
+            {{- with .Values.externalVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
             {{- if .Values.database.caCrt }}
