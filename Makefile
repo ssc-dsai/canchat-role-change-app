@@ -1,5 +1,5 @@
-VERSION ?= 0.1.0
-CHART_VERSION ?= 0.1.0
+VERSION ?= 0.1.1
+CHART_VERSION ?= 0.1.2
 DATE := $(shell date +%Y-%m-%d)
 
 update-version:
