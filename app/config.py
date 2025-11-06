@@ -33,6 +33,21 @@ def validate_prefix(prefix: str) -> str:
 
     return prefix
 
+def validate_db_url(db_url: str) -> str:
+    if not db_url:
+        raise ValueError("DATABASE_URL is required")
+    
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    
+    # Basic validation for common schemes
+    DB_URL_REGEX = re.compile(r"^(postgresql|mysql|sqlite)://[^\s]+$")
+    
+    if not DB_URL_REGEX.match(db_url):
+        raise ValueError(f"Invalid DATABASE_URL: {db_url}")
+    
+    return db_url
+
 APP_VERSION = os.getenv("APP_VERSION", "0.0.0")
 APP_NAME = os.getenv("APP_NAME", "CANChat Role Management App")
 APP_NAME_FR = os.getenv("APP_NAME_FR", "Application de gestion des rôles CANChat")
@@ -42,5 +57,5 @@ API_PREFIX = validate_prefix(os.getenv("API_PREFIX", "/api/v1"))
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", ['*'])
 EMAIL_HEADER_NAME = os.getenv("EMAIL_HEADER_NAME", "X-Forwarded-Email")
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = validate_db_url(os.getenv("DATABASE_URL"))
 ALLOWED_ROLES = os.getenv("ALLOWED_ROLES", "").split(",")
