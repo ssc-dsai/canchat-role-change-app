@@ -10,6 +10,7 @@ from app.routes import router
 from app.database import database, engine
 from app.models import user
 from app.config import setup_logging, APP_ENV, APP_NAME, APP_NAME_FR, APP_VERSION, APP_PREFIX, API_PREFIX, ALLOWED_ORIGINS, ALLOWED_ROLES, EMAIL_HEADER_NAME
+from app.middlewares import RedirectToAppPrefixMiddleware, RemoveTrailingSlashMiddleware
 
 setup_logging()
 log = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ async def lifespan(app: FastAPI):
 
 
 # Initialize FastAPI app
-app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan, root_path=APP_PREFIX)
+app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan, root_path=APP_PREFIX, redirect_slashes=False)
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,6 +48,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# Add the middleware to enforce APP_PREFIX
+app.add_middleware(RedirectToAppPrefixMiddleware, app_prefix=APP_PREFIX)
+app.add_middleware(RemoveTrailingSlashMiddleware, app_prefix=APP_PREFIX)
 
 # Include routes
 app.include_router(router, prefix=API_PREFIX)
