@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 from dotenv import load_dotenv
@@ -6,6 +7,22 @@ from dotenv import load_dotenv
 # Load .env file
 load_dotenv()
 
+log = logging.getLogger(__name__)
+
+
+
+def setup_logging():
+    ACCESS_LOG_NAME: str = "uvicorn.access"
+
+    class HealthCheckLoggingFilter(logging.Filter):
+        def filter(self, record):
+            # Here we match the log message's route or path for `/health` and `/health/db`.
+            return not ("/health" in record.getMessage())
+
+    health_check_filter = HealthCheckLoggingFilter()
+
+    uvicorn_access_logger = logging.getLogger(ACCESS_LOG_NAME)
+    uvicorn_access_logger.addFilter(health_check_filter)
 
 def validate_prefix(prefix: str) -> str:
     if not prefix:
@@ -14,7 +31,7 @@ def validate_prefix(prefix: str) -> str:
     # Normalize
     prefix = "/" + prefix.strip("/")
 
-    print(f"Validating API prefix: {prefix}")
+    log.info(f"Validating API prefix: {prefix}")
     
     # Allow single "/"
     if prefix == "/":

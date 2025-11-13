@@ -1,3 +1,7 @@
+## [0.1.3] - 2025-11-07
+
+- App Version to 0.2.0
+
 ## [0.1.2] - 2025-11-06
 
 - Fix externalVolumeMounts variable typo.

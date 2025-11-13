@@ -12,23 +12,5 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  role-change-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: role-change
-    restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://canchat:canchatpass@postgres:5432/canchatdb
-      ALLOWED_ROLES: user,pending,analyst,global_analyst
-      APP_ENV: dev
-      APP_PREFIX: /test-role-change
-    depends_on:
-      - postgres
-    ports:
-      - 8000:8000
-    volumes:
-      - .:/app
-
 volumes:
   postgres_data: {}
