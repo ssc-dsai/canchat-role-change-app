@@ -1,3 +1,9 @@
+## [v0.3.0] - 2025-11-14
+
+- Added error logs.
+- Fixed missing prefix in the language page links.
+- Fixed email to lowercase to match records.
+
 ## [0.2.1] - 2025-11-14
 
 - Fixed User model to match timestamps type.
