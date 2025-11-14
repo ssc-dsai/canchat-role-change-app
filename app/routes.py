@@ -19,7 +19,7 @@ async def get_user_role(forwarded_email: EmailStr = Header(None, alias=EMAIL_HEA
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized access")
 
     try:
-        query = user.select().where(user.c.email == forwarded_email )
+        query = user.select().where(user.c.email == forwarded_email.lower())
         user_record = await database.fetch_one(query)
 
         if user_record:
@@ -46,6 +46,7 @@ async def change_role(
     
     try:
         # Update the user's role in the database
+        forwarded_email = forwarded_email.lower()
         query = user.update().where(user.c.email == forwarded_email).values(role=request.role, updated_at=int(time.time()))
         await database.execute(query)
         
