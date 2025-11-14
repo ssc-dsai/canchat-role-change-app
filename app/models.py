@@ -14,11 +14,7 @@ class RoleResponse(BaseModel):
 user = Table(
     "user",
     metadata,
-    Column("id", String, primary_key=True),
-    Column("name", String),
-    Column("email", String, unique=True, nullable=False),   # Unique email for each user
-    Column("role", String, nullable=False), # Role (user, admin, etc.)
-    Column("domain", String),
-    Column("created_at", BigInteger, server_default=int(time.time())),
-    Column("updated_at", BigInteger, server_default=int(time.time()), onupdate=int(time.time())),
+    Column("email", String),
+    Column("role", String),
+    Column("updated_at", BigInteger),
 )
