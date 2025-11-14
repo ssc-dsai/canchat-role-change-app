@@ -16,6 +16,7 @@ async def get_user_role(forwarded_email: EmailStr = Header(None, alias=EMAIL_HEA
 
     # Check if the requestor email exists and is allowed to make changes
     if not forwarded_email:
+        log.error(f"Unauthorized access: {forwarded_email}")
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized access")
 
     try:
@@ -25,6 +26,7 @@ async def get_user_role(forwarded_email: EmailStr = Header(None, alias=EMAIL_HEA
         if user_record:
             return {"email": user_record.email, "role": user_record.role}
         else:
+            log.error(f"User not found: {forwarded_email}")
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
     except Exception as e:
@@ -38,10 +40,12 @@ async def change_role(
 ):
     # Check if the requestor email exists and is allowed to make changes
     if not forwarded_email:
+        log.error(f"Unauthorized access: {forwarded_email}")
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Unauthorized access")
     
     # Validate the supplied role
     if not is_valid_role(request.role):
+        log.error(f"Invalid role supplied: {request.role}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid role")
     
     try:
@@ -55,6 +59,7 @@ async def change_role(
         user_record = await database.fetch_one(query)
         
         if not user_record:
+            log.error(f"User not found after update: {forwarded_email}")
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         
         return {"email": user_record.email, "role": user_record.role}
