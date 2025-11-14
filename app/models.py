@@ -1,4 +1,3 @@
-import time
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import Table, Column, String, BigInteger
 from app.database import metadata
