@@ -1,4 +1,4 @@
-VERSION ?= v0.3.0
+VERSION ?= 0.3.0
 CHART_VERSION ?= 0.1.5
 DATE := $(shell date +%Y-%m-%d)
 
