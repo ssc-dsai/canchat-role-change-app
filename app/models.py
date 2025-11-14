@@ -1,5 +1,6 @@
+import time
 from pydantic import BaseModel, EmailStr
-from sqlalchemy import Table, Column, String, DateTime, func
+from sqlalchemy import Table, Column, String, BigInteger
 from app.database import metadata
 
 # Response messages
@@ -18,6 +19,6 @@ user = Table(
     Column("email", String, unique=True, nullable=False),   # Unique email for each user
     Column("role", String, nullable=False), # Role (user, admin, etc.)
     Column("domain", String),
-    Column("created_at", DateTime, server_default=func.now()),
-    Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
+    Column("created_at", BigInteger, server_default=int(time.time())),
+    Column("updated_at", BigInteger, server_default=int(time.time()), onupdate=int(time.time())),
 )

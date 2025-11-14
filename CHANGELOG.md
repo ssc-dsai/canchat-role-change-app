@@ -1,3 +1,7 @@
+## [0.2.1] - 2025-11-14
+
+- Fixed User model to match timestamps type.
+
 ## [0.2.0] - 2025-11-07
 
 - Added Health Check Log Filter
