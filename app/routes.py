@@ -1,4 +1,5 @@
 import logging
+import time
 from pydantic import EmailStr
 from fastapi import APIRouter, Header, HTTPException, status
 from app.config import EMAIL_HEADER_NAME
@@ -45,7 +46,7 @@ async def change_role(
     
     try:
         # Update the user's role in the database
-        query = user.update().where(user.c.email == forwarded_email).values(role=request.role)
+        query = user.update().where(user.c.email == forwarded_email).values(role=request.role, updated_at=int(time.time()))
         await database.execute(query)
         
         # Query the user details after update

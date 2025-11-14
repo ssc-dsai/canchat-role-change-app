@@ -1,5 +1,5 @@
-VERSION ?= 0.2.0
-CHART_VERSION ?= 0.1.3
+VERSION ?= 0.2.1
+CHART_VERSION ?= 0.1.4
 DATE := $(shell date +%Y-%m-%d)
 
 update-version:
@@ -9,6 +9,6 @@ update-version:
 
 	# Add changelog entry if not already done
 	grep "$(CHART_VERSION)" ./deployments/charts/canchat-role-change/CHANGELOG.md || \
-		{ echo "## [$(CHART_VERSION)] - $(DATE)\n\n" | cat - ./deployments/charts/canchat-role-change/CHANGELOG.md > temp && mv temp ./deployments/charts/canchat-role-change-app/CHANGELOG.md; }
+		{ echo "## [$(CHART_VERSION)] - $(DATE)\n\n" | cat - ./deployments/charts/canchat-role-change/CHANGELOG.md > temp && mv temp ./deployments/charts/canchat-role-change/CHANGELOG.md; }
 	grep "$(VERSION)" ./CHANGELOG.md || \
 		{ echo "## [$(VERSION)] - $(DATE)\n\n" | cat - ./CHANGELOG.md > temp && mv temp ./CHANGELOG.md; }

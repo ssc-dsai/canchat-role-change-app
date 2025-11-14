@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from sqlalchemy import Table, Column, String, DateTime, func
+from sqlalchemy import Table, Column, String, BigInteger
 from app.database import metadata
 
 # Response messages
@@ -13,11 +13,7 @@ class RoleResponse(BaseModel):
 user = Table(
     "user",
     metadata,
-    Column("id", String, primary_key=True),
-    Column("name", String),
-    Column("email", String, unique=True, nullable=False),   # Unique email for each user
-    Column("role", String, nullable=False), # Role (user, admin, etc.)
-    Column("domain", String),
-    Column("created_at", DateTime, server_default=func.now()),
-    Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
+    Column("email", String),
+    Column("role", String),
+    Column("updated_at", BigInteger),
 )
